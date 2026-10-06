@@ -12,8 +12,11 @@ class Jugador
 end
 
 class Partido
+  private_class_method :new
   attr_reader :jugador1, :jugador2, :ganador, :puntos_en_juego, :tipo_de_partido
+
   TIPOS_DE_PARTIDOS = %i[muerte_a_10 muerte_a_7 a_4_games].freeze
+
   NOMBRES_DE_TIPOS = {
     muerte_a_10: "muerte súbita a 100",
     muerte_a_7: "muerte súbita a 7",
