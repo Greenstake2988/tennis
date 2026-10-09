@@ -1,1 +1,3 @@
--record(literal, {value :: gleam@dynamic:dynamic_()}).
+-record(literal, {
+    value :: gleam@dynamic:dynamic_()
+}).

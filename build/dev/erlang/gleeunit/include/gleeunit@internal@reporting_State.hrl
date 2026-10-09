@@ -1,1 +1,5 @@
--record(state, {passed :: integer(), failed :: integer(), skipped :: integer()}).
+-record(state, {
+    passed :: integer(),
+    failed :: integer(),
+    skipped :: integer()
+}).

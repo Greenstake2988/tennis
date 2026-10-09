@@ -1,1 +1,3 @@
--record(expression, {value :: gleam@dynamic:dynamic_()}).
+-record(expression, {
+    value :: gleam@dynamic:dynamic_()
+}).

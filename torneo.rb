@@ -14,7 +14,7 @@ class Jugador
   end
 end
 
-# Modulo para descrbiir como se comporta los marcadores
+# Modulo para describir como se comporta los marcadores
 module Marcador
   REGLAS = {
     juego: {
@@ -29,7 +29,7 @@ module Marcador
   }.freeze
 
   def self.valido?(categoria, puntos_a, puntos_b, variante: :normal, con_ventajas: true)
-    return false unless [a, b].all?(Integer)
+    return false unless [puntos_a, puntos_b].all?(Integer)
 
     minimo = REGLAS.dig(categoria, variante)
     return false if minimo.nil? # categoría o variante inexistente

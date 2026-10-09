@@ -1,1 +1,4 @@
--record(jugador, {nombre :: binary(), puntos :: integer()}).
+-record(jugador, {
+    nombre :: binary(),
+    puntos :: integer()
+}).

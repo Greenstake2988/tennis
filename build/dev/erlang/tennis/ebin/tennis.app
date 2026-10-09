@@ -1,8 +1,13 @@
 {application, tennis, [
     {vsn, "1.0.0"},
     {applications, [gleam_stdlib,
-                    gleeunit]},
+                    gleeunit,
+                    gsh]},
     {description, ""},
-    {modules, []},
+    {modules, [jugador,
+               marcador,
+               partido,
+               tennis,
+               torneo]},
     {registered, []}
 ]}.

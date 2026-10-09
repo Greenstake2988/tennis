@@ -17,3 +17,4 @@ gleam_stdlib = ">= 1.0.0 and < 2.0.0"
 
 [dev_dependencies]
 gleeunit = ">= 1.0.0 and < 2.0.0"
+gsh = ">= 1.4.1 and < 2.0.0"
