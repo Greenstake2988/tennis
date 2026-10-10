@@ -5,16 +5,9 @@ pub type Jugador {
 }
 
 pub fn nuevo(nombre: String) -> Jugador {
-  let assert Ok(puntos_iniciales) = puntos.crear(0)
-  Jugador(nombre:, puntos: puntos_iniciales)
+  Jugador(nombre:, puntos: puntos.cero())
 }
 
-pub fn sumar_puntos(jugador: Jugador, cantidad: Int) -> Result(Jugador, Nil) {
-  case puntos.crear(cantidad) {
-    Ok(nuevos_puntos) ->
-      Ok(
-        Jugador(..jugador, puntos: puntos.sumar(jugador.puntos, nuevos_puntos)),
-      )
-    Error(_) -> Error(Nil)
-  }
+pub fn sumar_puntos(jugador: Jugador, puntos: Puntos) -> Jugador {
+  Jugador(..jugador, puntos: puntos.sumar(jugador.puntos, puntos))
 }

@@ -14,6 +14,10 @@ pub fn valor(puntos: Puntos) -> Int {
   num
 }
 
+pub fn cero() -> Puntos {
+  Puntos(0)
+}
+
 pub fn sumar(a: Puntos, b: Puntos) -> Puntos {
   Puntos(valor(a) + valor(b))
 }
