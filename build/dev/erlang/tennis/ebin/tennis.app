@@ -7,6 +7,7 @@
     {modules, [jugador,
                marcador,
                partido,
+               puntos,
                tennis,
                torneo]},
     {registered, []}
