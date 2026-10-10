@@ -1,24 +1,20 @@
-// class Jugador
-//   attr_reader :nombre, :puntos
-//
-//   def initialize(nombre)
-//     @nombre = nombre
-//     @puntos = 0
-//   end
-//
-//   def sumar_puntos(puntos)
-//     @puntos += puntos
-//   end
-// end
+import puntos.{type Puntos}
 
 pub type Jugador {
-  Jugador(nombre: String, puntos: Int)
+  Jugador(nombre: String, puntos: Puntos)
 }
 
 pub fn nuevo(nombre: String) -> Jugador {
-  Jugador(nombre:, puntos: 0)
+  let assert Ok(puntos_iniciales) = puntos.crear(0)
+  Jugador(nombre:, puntos: puntos_iniciales)
 }
 
-pub fn sumar_puntos(jugador: Jugador, cantidad: Int) -> Jugador {
-  Jugador(..jugador, puntos: jugador.puntos + cantidad)
+pub fn sumar_puntos(jugador: Jugador, cantidad: Int) -> Result(Jugador, Nil) {
+  case puntos.crear(cantidad) {
+    Ok(nuevos_puntos) ->
+      Ok(
+        Jugador(..jugador, puntos: puntos.sumar(jugador.puntos, nuevos_puntos)),
+      )
+    Error(_) -> Error(Nil)
+  }
 }
