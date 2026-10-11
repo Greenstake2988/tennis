@@ -32,10 +32,10 @@ pub fn registrar_resultado(
   partido: Partido,
   a: Int,
   b: Int,
-) -> Result(Partido, Nil) {
+) -> Result(Partido, marcador.ErrorMarcador) {
   case marcador.registrar_marcador(partido.marcador, a, b) {
     Ok(m) -> Ok(Partido(..partido, marcador: m))
-    Error(_) -> Error(Nil)
+    Error(e) -> Error(e)
   }
 }
 

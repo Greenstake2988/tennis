@@ -6,6 +6,11 @@ pub opaque type Marcador {
   Marcador(regla: Regla, a: Option(Int), b: Option(Int))
 }
 
+pub type ErrorMarcador {
+  YaRegistrado
+  MarcadorInvalido
+}
+
 pub type CierrePuntos {
   SinVentajas
   ConVentajas
@@ -48,10 +53,14 @@ pub fn registrar_marcador(
   marcador: Marcador,
   a: Int,
   b: Int,
-) -> Result(Marcador, Nil) {
-  case valido(marcador.regla, a, b) {
-    True -> Ok(Marcador(marcador.regla, Some(a), Some(b)))
-    False -> Error(Nil)
+) -> Result(Marcador, ErrorMarcador) {
+  case marcador.a, marcador.b {
+    Some(_), Some(_) -> Error(YaRegistrado)
+    _, _ ->
+      case valido(marcador.regla, a, b) {
+        True -> Ok(Marcador(marcador.regla, Some(a), Some(b)))
+        False -> Error(MarcadorInvalido)
+      }
   }
 }
 
@@ -110,7 +119,7 @@ fn set_valido(
     False, ConTiebreak ->
       case ganador == min {
         True -> perdedor <= min - 2
-        False -> ganador == min + 1 && perdedor >= min - 1
+        False -> ganador == min + 1 && perdedor >= min - 1 && perdedor <= min
       }
   }
 }
