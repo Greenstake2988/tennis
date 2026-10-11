@@ -20,6 +20,7 @@
                gleam@set,
                gleam@string,
                gleam@string_tree,
-               gleam@uri]},
+               gleam@uri,
+               gleam_stdlib]},
     {registered, []}
 ]}.

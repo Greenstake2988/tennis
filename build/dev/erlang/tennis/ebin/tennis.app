@@ -9,6 +9,7 @@
                partido,
                puntos,
                tennis,
+               tennis@@main,
                torneo]},
     {registered, []}
 ]}.
