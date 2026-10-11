@@ -2,10 +2,10 @@
 -compile([no_auto_import, nowarn_ignored, nowarn_unused_vars, nowarn_unused_function, nowarn_nomatch, inline]).
 -export([main/0]).
 
--file("src/tennis.gleam", 5).
+-file("src/tennis.gleam", 6).
 -spec main() -> nil.
 main() ->
     Oscar = jugador:nuevo(~"Oscar"),
     gleam_stdlib:println(<<"El nombre del jugador es "/utf8, (erlang:element(2, Oscar))/binary>>),
-    gleam_stdlib:println(<<<<"y tiene: "/utf8, (erlang:integer_to_binary(erlang:element(3, Oscar)))/binary>>/binary, " pts."/utf8>>).
+    gleam_stdlib:println(<<<<"y tiene: "/utf8, (erlang:integer_to_binary(puntos:valor(erlang:element(3, Oscar))))/binary>>/binary, " pts."/utf8>>).
 

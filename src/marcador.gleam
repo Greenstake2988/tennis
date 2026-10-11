@@ -1,5 +1,10 @@
 // src/marcador.gleam
 import gleam/int
+import gleam/option.{type Option, None, Some}
+
+pub opaque type Marcador {
+  Marcador(regla: Regla, a: Option(Int), b: Option(Int))
+}
 
 pub type CierrePuntos {
   SinVentajas
@@ -31,13 +36,22 @@ pub type Regla {
   Set(VarianteSet, CierreSet)
 }
 
-fn minimo(regla: Regla) -> Int {
-  case regla {
-    Juego(Normal, _) -> 4
-    Muerte(A7, _) -> 7
-    Muerte(A10, _) -> 10
-    Set(SetNormal, _) -> 6
-    Set(SetA4, _) -> 4
+pub fn nuevo(regla: Regla) -> Marcador {
+  Marcador(regla, None, None)
+}
+
+pub fn regla(marcador: Marcador) -> Regla {
+  marcador.regla
+}
+
+pub fn registrar_marcador(
+  marcador: Marcador,
+  a: Int,
+  b: Int,
+) -> Result(Marcador, Nil) {
+  case valido(marcador.regla, a, b) {
+    True -> Ok(Marcador(marcador.regla, Some(a), Some(b)))
+    False -> Error(Nil)
   }
 }
 
@@ -54,6 +68,16 @@ pub fn valido(regla: Regla, a: Int, b: Int) -> Bool {
         Juego(_, cierre) | Muerte(_, cierre) ->
           juego_valido(ganador, perdedor, min, cierre)
       }
+  }
+}
+
+fn minimo(regla: Regla) -> Int {
+  case regla {
+    Juego(Normal, _) -> 4
+    Muerte(A7, _) -> 7
+    Muerte(A10, _) -> 10
+    Set(SetNormal, _) -> 6
+    Set(SetA4, _) -> 4
   }
 }
 
@@ -88,5 +112,12 @@ fn set_valido(
         True -> perdedor <= min - 2
         False -> ganador == min + 1 && perdedor >= min - 1
       }
+  }
+}
+
+pub fn gana_a(marcador: Marcador) -> Bool {
+  case marcador.a, marcador.b {
+    Some(a), Some(b) -> a > b
+    _, _ -> False
   }
 }
