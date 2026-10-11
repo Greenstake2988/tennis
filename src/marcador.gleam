@@ -115,9 +115,9 @@ fn set_valido(
   }
 }
 
-pub fn gana_a(marcador: Marcador) -> Bool {
+pub fn gana_a(marcador: Marcador) -> Result(Bool, Nil) {
   case marcador.a, marcador.b {
-    Some(a), Some(b) -> a > b
-    _, _ -> False
+    Some(a), Some(b) -> Ok(a > b)
+    _, _ -> Error(Nil)
   }
 }

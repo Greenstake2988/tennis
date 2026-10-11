@@ -11,3 +11,7 @@ pub fn nuevo(nombre: String) -> Jugador {
 pub fn sumar_puntos(jugador: Jugador, puntos: Puntos) -> Jugador {
   Jugador(..jugador, puntos: puntos.sumar(jugador.puntos, puntos))
 }
+
+pub fn iguales(jugador_a: Jugador, jugador_b: Jugador) -> Bool {
+  jugador_a.nombre == jugador_b.nombre
+}

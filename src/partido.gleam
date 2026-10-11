@@ -1,14 +1,31 @@
-import gleam/option.{type Option, Some}
 import jugador.{type Jugador}
 import marcador.{type Marcador}
 
-pub type Partido {
-  Partido(
-    jugador_a: Jugador,
-    jugador_b: Jugador,
-    marcador: Marcador,
-    ganador: Option(Jugador),
-  )
+pub opaque type Partido {
+  Partido(jugador_a: Jugador, jugador_b: Jugador, marcador: Marcador)
+}
+
+pub fn nuevo(
+  jugador_a: Jugador,
+  jugador_b: Jugador,
+  marcador: Marcador,
+) -> Result(Partido, Nil) {
+  case jugador.iguales(jugador_a, jugador_b) {
+    False -> Ok(Partido(jugador_a:, jugador_b:, marcador:))
+    True -> Error(Nil)
+  }
+}
+
+pub fn jugador_a(partido: Partido) -> Jugador {
+  partido.jugador_a
+}
+
+pub fn jugador_b(partido: Partido) -> Jugador {
+  partido.jugador_b
+}
+
+pub fn marcador(partido: Partido) -> Marcador {
+  partido.marcador
 }
 
 pub fn registrar_resultado(
@@ -17,14 +34,15 @@ pub fn registrar_resultado(
   b: Int,
 ) -> Result(Partido, Nil) {
   case marcador.registrar_marcador(partido.marcador, a, b) {
-    Ok(m) -> Partido(..partido, marcador: m) |> registrar_ganador |> Ok
+    Ok(m) -> Ok(Partido(..partido, marcador: m))
     Error(_) -> Error(Nil)
   }
 }
 
-fn registrar_ganador(partido: Partido) -> Partido {
+pub fn ganador(partido: Partido) -> Result(Jugador, Nil) {
   case marcador.gana_a(partido.marcador) {
-    True -> Partido(..partido, ganador: Some(partido.jugador_a))
-    False -> Partido(..partido, ganador: Some(partido.jugador_b))
+    Ok(True) -> Ok(partido.jugador_a)
+    Ok(False) -> Ok(partido.jugador_b)
+    Error(_) -> Error(Nil)
   }
 }
