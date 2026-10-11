@@ -1,4 +1,6 @@
-// src/marcador.gleam
+//// Reglas y validacion de marcadores finales de tenis.
+//// Un marcador solo puede tener un marcador valido.
+
 import gleam/int
 import gleam/option.{type Option, None, Some}
 
@@ -35,6 +37,7 @@ pub type VarianteSet {
   SetA4
 }
 
+/// Cómo se juega: Muerte, Juego o Set, cada uno con su variante y su cierre.
 pub type Regla {
   Muerte(VarianteMuerte, CierrePuntos)
   Juego(VariantePuntos, CierrePuntos)
@@ -124,6 +127,7 @@ fn set_valido(
   }
 }
 
+/// Devuelve Error(Nil) si el marcador todavia no tiene resultado.
 pub fn gana_a(marcador: Marcador) -> Result(Bool, Nil) {
   case marcador.a, marcador.b {
     Some(a), Some(b) -> Ok(a > b)
