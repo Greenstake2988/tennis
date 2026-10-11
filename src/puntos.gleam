@@ -22,6 +22,7 @@ pub fn sumar(a: Puntos, b: Puntos) -> Puntos {
   Puntos(valor(a) + valor(b))
 }
 
+/// El resultado no puede ser negativo por que Puntos no lo acepta.
 pub fn restar(a: Puntos, b: Puntos) -> Result(Puntos, Nil) {
   crear(valor(a) - valor(b))
 }
