@@ -6,18 +6,19 @@ pub opaque type Juego {
     jugador_a: Jugador,
     jugador_b: Jugador,
     tipo: TipoDeJuego,
+    cierre: CierreJuego,
     marcador: Marcador,
   )
 }
 
-pub opaque type Marcador {
+type Marcador {
   Marcador(a: Int, b: Int)
 }
 
 pub type TipoDeJuego {
-  Normal(CierreJuego)
-  A7(CierreJuego)
-  A10(CierreJuego)
+  Normal
+  A7
+  A10
 }
 
 pub type CierreJuego {
@@ -33,10 +34,11 @@ pub type ErrorMarcador {
 pub fn nuevo(
   jugador_a: Jugador,
   jugador_b: Jugador,
+  cierre: CierreJuego,
   tipo_de_juego: TipoDeJuego,
 ) -> Result(Juego, Nil) {
   case !jugador.iguales(jugador_a, jugador_b) {
-    True -> Ok(Juego(jugador_a, jugador_b, tipo_de_juego, marcador_nuevo()))
+    True -> Ok(Juego(jugador_a, jugador_b, tipo_de_juego, cierre,  marcador_nuevo()))
     False -> Error(Nil)
   }
 }
@@ -48,7 +50,7 @@ pub fn registrar_marcador(
 ) -> Result(Juego, ErrorMarcador) {
   case es_nuevo(juego.marcador) {
     True ->
-      case marcador_valido(juego.tipo, a, b) {
+      case marcador_valido(juego.tipo, juego.cierre, a, b) {
         True -> Ok(Juego(..juego, marcador: Marcador(a, b)))
         False -> Error(MarcadorInvalido)
       }
@@ -71,7 +73,7 @@ fn marcador_nuevo() -> Marcador {
   Marcador(0, 0)
 }
 
-fn marcador_valido(tipo_de_juego: TipoDeJuego, a: Int, b: Int) -> Bool {
+fn marcador_valido(tipo_de_juego: TipoDeJuego, cierre: CierreJuego, a: Int, b: Int) -> Bool {
   let ganador = int.max(a, b)
   let perdedor = int.min(a, b)
   let min = minimo(tipo_de_juego)
@@ -79,7 +81,7 @@ fn marcador_valido(tipo_de_juego: TipoDeJuego, a: Int, b: Int) -> Bool {
   case perdedor < 0 {
     True -> False
     False ->
-      case cierre(tipo_de_juego) {
+      case cierre {
         ConVentajas -> con_ventajas_valido(ganador, perdedor, min)
         SinVentajas -> sin_ventajas_valido(ganador, perdedor, min)
       }
@@ -100,17 +102,17 @@ fn sin_ventajas_valido(ganador: Int, perdedor: Int, min: Int) -> Bool {
   ganador == min && perdedor < min
 }
 
-fn cierre(tipo: TipoDeJuego) -> CierreJuego {
-  case tipo {
-    Normal(c) | A7(c) | A10(c) -> c
-  }
-}
+// fn cierre(tipo: TipoDeJuego) -> CierreJuego {
+//   case tipo {
+//     Normal(c) | A7(c) | A10(c) -> c
+//   }
+// }
 
 fn minimo(tipo_de_juego: TipoDeJuego) -> Int {
   case tipo_de_juego {
-    Normal(_) -> 4
-    A7(_) -> 7
-    A10(_) -> 10
+    Normal -> 4
+    A7 -> 7
+    A10 -> 10
   }
 }
 
