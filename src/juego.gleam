@@ -1,14 +1,7 @@
 import gleam/int
-import jugador.{type Jugador}
 
 pub opaque type Juego {
-  Juego(
-    jugador_a: Jugador,
-    jugador_b: Jugador,
-    tipo: TipoDeJuego,
-    cierre: CierreJuego,
-    marcador: Marcador,
-  )
+  Juego(tipo: TipoDeJuego, cierre: CierreJuego, marcador: Marcador)
 }
 
 type Marcador {
@@ -31,16 +24,8 @@ pub type ErrorMarcador {
   MarcadorInvalido
 }
 
-pub fn nuevo(
-  jugador_a: Jugador,
-  jugador_b: Jugador,
-  cierre: CierreJuego,
-  tipo_de_juego: TipoDeJuego,
-) -> Result(Juego, Nil) {
-  case !jugador.iguales(jugador_a, jugador_b) {
-    True -> Ok(Juego(jugador_a, jugador_b, tipo_de_juego, cierre,  marcador_nuevo()))
-    False -> Error(Nil)
-  }
+pub fn nuevo(cierre: CierreJuego, tipo_de_juego: TipoDeJuego) -> Juego {
+  Juego(tipo_de_juego, cierre, marcador_nuevo())
 }
 
 pub fn registrar_marcador(
@@ -58,14 +43,11 @@ pub fn registrar_marcador(
   }
 }
 
-pub fn quien_gano(juego: Juego) -> Result(Jugador, Nil) {
+pub fn gana_a(juego: Juego) -> Result(Bool, Nil) {
   case juego.marcador.a, juego.marcador.b {
     0, 0 -> Error(Nil)
-    a, b ->
-      case a > b {
-        True -> Ok(juego.jugador_a)
-        False -> Ok(juego.jugador_b)
-      }
+    a, b -> Ok(a > b)
+
   }
 }
 
@@ -73,7 +55,12 @@ fn marcador_nuevo() -> Marcador {
   Marcador(0, 0)
 }
 
-fn marcador_valido(tipo_de_juego: TipoDeJuego, cierre: CierreJuego, a: Int, b: Int) -> Bool {
+fn marcador_valido(
+  tipo_de_juego: TipoDeJuego,
+  cierre: CierreJuego,
+  a: Int,
+  b: Int,
+) -> Bool {
   let ganador = int.max(a, b)
   let perdedor = int.min(a, b)
   let min = minimo(tipo_de_juego)
@@ -101,12 +88,6 @@ fn con_ventajas_valido(ganador: Int, perdedor: Int, min: Int) -> Bool {
 fn sin_ventajas_valido(ganador: Int, perdedor: Int, min: Int) -> Bool {
   ganador == min && perdedor < min
 }
-
-// fn cierre(tipo: TipoDeJuego) -> CierreJuego {
-//   case tipo {
-//     Normal(c) | A7(c) | A10(c) -> c
-//   }
-// }
 
 fn minimo(tipo_de_juego: TipoDeJuego) -> Int {
   case tipo_de_juego {
