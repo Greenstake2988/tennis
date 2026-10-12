@@ -1,6 +1,6 @@
-import juego.{type Juego}
+import juego.{type Juego,type TipoDeJuego}
 import jugador.{type Jugador}
-
+import set.{type Set}
 pub type TipoDePartido {
   EsDuelo
   EsPartido
@@ -15,30 +15,31 @@ pub opaque type Partido {
   )
 }
 
-pub type CierreSet {
-  PrimeroA
-  TieBreakA7
-  TieBreakA10
-}
+// pub type CierreSet {
+//   PrimeroA
+//   TieBreakA7
+//   TieBreakA10
+// }
 
-pub type Set {
-  Set(set: List(Juego), cierre: CierreSet)
-}
+// pub type Set {
+//   Set(set: List(Juego), cierre: CierreSet)
+// }
 
-pub type CuantosSet {
-  Uno
-  MejorDe3
-  MejorDe5
+// pub type CuantosSet {
+//   Uno
+//   MejorDe3
+//   MejorDe5
+// }
+
+pub type Formato {
+  Duelo(TipoDeJuego)
+  ASets(TipoDeSet)
 }
 
 pub type TipoDeSet {
   SetA4Games(CuantosSet)
   SetNormal(CuantosSet)
 }
-
-// pub type TipoDePartido {
-//   TipoDePartido(tipo_de_set: TipoDeSet)
-// }
 
 pub fn nuevo(
   jugador_a: Jugador,

@@ -47,7 +47,6 @@ pub fn gana_a(juego: Juego) -> Result(Bool, Nil) {
   case juego.marcador.a, juego.marcador.b {
     0, 0 -> Error(Nil)
     a, b -> Ok(a > b)
-
   }
 }
 
