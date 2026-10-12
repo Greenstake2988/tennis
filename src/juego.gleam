@@ -1,4 +1,18 @@
-import marcador.{type Marcador}
+import gleam/int
+import jugador.{type Jugador}
+
+pub opaque type Juego {
+  Juego(
+    jugador_a: Jugador,
+    jugador_b: Jugador,
+    tipo: TipoDeJuego,
+    marcador: Marcador,
+  )
+}
+
+pub opaque type Marcador {
+  Marcador(a: Int, b: Int)
+}
 
 pub type TipoDeJuego {
   Normal(CierreJuego)
@@ -11,10 +25,95 @@ pub type CierreJuego {
   ConVentajas
 }
 
-pub opaque type Juego {
-  Juego(Marcador, TipoDeJuego)
+pub type ErrorMarcador {
+  YaRegistrado
+  MarcadorInvalido
 }
 
-pub fn nuevo(tipo_de_juego: TipoDeJuego) -> Juego {
-  Juego(marcador.nuevo(tipo_de_juego), tipo_de_juego)
+pub fn nuevo(
+  jugador_a: Jugador,
+  jugador_b: Jugador,
+  tipo_de_juego: TipoDeJuego,
+) -> Result(Juego, Nil) {
+  case !jugador.iguales(jugador_a, jugador_b) {
+    True -> Ok(Juego(jugador_a, jugador_b, tipo_de_juego, marcador_nuevo()))
+    False -> Error(Nil)
+  }
+}
+
+pub fn registrar_marcador(
+  juego: Juego,
+  a: Int,
+  b: Int,
+) -> Result(Juego, ErrorMarcador) {
+  case es_nuevo(juego.marcador) {
+    True ->
+      case marcador_valido(juego.tipo, a, b) {
+        True -> Ok(Juego(..juego, marcador: Marcador(a, b)))
+        False -> Error(MarcadorInvalido)
+      }
+    False -> Error(YaRegistrado)
+  }
+}
+
+pub fn quien_gano(juego: Juego) -> Result(Jugador, Nil) {
+  case juego.marcador.a, juego.marcador.b {
+    0, 0 -> Error(Nil)
+    a, b ->
+      case a > b {
+        True -> Ok(juego.jugador_a)
+        False -> Ok(juego.jugador_b)
+      }
+  }
+}
+
+fn marcador_nuevo() -> Marcador {
+  Marcador(0, 0)
+}
+
+fn marcador_valido(tipo_de_juego: TipoDeJuego, a: Int, b: Int) -> Bool {
+  let ganador = int.max(a, b)
+  let perdedor = int.min(a, b)
+  let min = minimo(tipo_de_juego)
+
+  case perdedor < 0 {
+    True -> False
+    False ->
+      case cierre(tipo_de_juego) {
+        ConVentajas -> con_ventajas_valido(ganador, perdedor, min)
+        SinVentajas -> sin_ventajas_valido(ganador, perdedor, min)
+      }
+  }
+}
+
+// Hay que llegar al mínimo y ganar por 2.
+// Si el ganador pasó el mínimo, el juego se alargó y la diferencia es exactamente 2.
+fn con_ventajas_valido(ganador: Int, perdedor: Int, min: Int) -> Bool {
+  case ganador == min {
+    True -> ganador - perdedor >= 2
+    False -> ganador > min && ganador - perdedor == 2
+  }
+}
+
+// Sin ventaja: el juego termina exactamente al llegar al mínimo.
+fn sin_ventajas_valido(ganador: Int, perdedor: Int, min: Int) -> Bool {
+  ganador == min && perdedor < min
+}
+
+fn cierre(tipo: TipoDeJuego) -> CierreJuego {
+  case tipo {
+    Normal(c) | A7(c) | A10(c) -> c
+  }
+}
+
+fn minimo(tipo_de_juego: TipoDeJuego) -> Int {
+  case tipo_de_juego {
+    Normal(_) -> 4
+    A7(_) -> 7
+    A10(_) -> 10
+  }
+}
+
+fn es_nuevo(marcador: Marcador) -> Bool {
+  marcador.a == 0 && marcador.b == 0
 }

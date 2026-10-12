@@ -1,136 +1,163 @@
-//// Reglas y validacion de marcadores finales de tenis.
-//// Un marcador solo puede tener un marcador valido.
-
-import gleam/int
-import gleam/option.{type Option, None, Some}
-
-pub opaque type Marcador {
-  Marcador(regla: Regla, a: Option(Int), b: Option(Int))
-}
-
-pub type ErrorMarcador {
-  YaRegistrado
-  MarcadorInvalido
-}
-
-pub type CierrePuntos {
-  SinVentajas
-  ConVentajas
-}
-
-pub type CierreSet {
-  PrimeroA
-  ConTiebreak
-}
-
-pub type VarianteMuerte {
-  A7
-  A10
-}
-
-pub type VariantePuntos {
-  Normal
-}
-
-pub type VarianteSet {
-  SetNormal
-  SetA4
-}
-
-/// Cómo se juega: Muerte, Juego o Set, cada uno con su variante y su cierre.
-pub type Regla {
-  Muerte(VarianteMuerte, CierrePuntos)
-  Juego(VariantePuntos, CierrePuntos)
-  Set(VarianteSet, CierreSet)
-}
-
-pub fn nuevo(regla: Regla) -> Marcador {
-  Marcador(regla, None, None)
-}
-
-pub fn regla(marcador: Marcador) -> Regla {
-  marcador.regla
-}
-
-pub fn registrar_marcador(
-  marcador: Marcador,
-  a: Int,
-  b: Int,
-) -> Result(Marcador, ErrorMarcador) {
-  case marcador.a, marcador.b {
-    Some(_), Some(_) -> Error(YaRegistrado)
-    _, _ ->
-      case valido(marcador.regla, a, b) {
-        True -> Ok(Marcador(marcador.regla, Some(a), Some(b)))
-        False -> Error(MarcadorInvalido)
-      }
-  }
-}
-
-pub fn valido(regla: Regla, a: Int, b: Int) -> Bool {
-  let ganador = int.max(a, b)
-  let perdedor = int.min(a, b)
-  let min = minimo(regla)
-
-  case perdedor < 0 {
-    True -> False
-    False ->
-      case regla {
-        Set(_, cierre) -> set_valido(ganador, perdedor, min, cierre)
-        Juego(_, cierre) | Muerte(_, cierre) ->
-          juego_valido(ganador, perdedor, min, cierre)
-      }
-  }
-}
-
-fn minimo(regla: Regla) -> Int {
-  case regla {
-    Juego(Normal, _) -> 4
-    Muerte(A7, _) -> 7
-    Muerte(A10, _) -> 10
-    Set(SetNormal, _) -> 6
-    Set(SetA4, _) -> 4
-  }
-}
-
-fn juego_valido(
-  ganador: Int,
-  perdedor: Int,
-  min: Int,
-  cierre: CierrePuntos,
-) -> Bool {
-  case ganador < min, cierre {
-    True, _ -> False
-    False, ConVentajas ->
-      case ganador == min {
-        True -> perdedor <= min - 2
-        False -> ganador - perdedor == 2
-      }
-    False, SinVentajas -> ganador == min && perdedor < min
-  }
-}
-
-fn set_valido(
-  ganador: Int,
-  perdedor: Int,
-  min: Int,
-  cierre: CierreSet,
-) -> Bool {
-  case ganador < min, cierre {
-    True, _ -> False
-    False, PrimeroA -> ganador == min && perdedor < min
-    False, ConTiebreak ->
-      case ganador == min {
-        True -> perdedor <= min - 2
-        False -> ganador == min + 1 && perdedor >= min - 1 && perdedor <= min
-      }
-  }
-}
-
-/// Devuelve Error(Nil) si el marcador todavia no tiene resultado.
-pub fn gana_a(marcador: Marcador) -> Result(Bool, Nil) {
-  case marcador.a, marcador.b {
-    Some(a), Some(b) -> Ok(a > b)
-    _, _ -> Error(Nil)
-  }
-}
+// //// Reglas y validacion de marcadores finales de tenis.
+// //// Un marcador solo puede tener un marcador valido.
+// 
+// // import gleam/int
+// import gleam/option.{None, Some}
+// 
+// pub opaque type Marcador {
+//   Marcador(a: Int, b: Int)
+// }
+// 
+// pub type ErrorMarcador {
+//   YaRegistrado
+//   MarcadorInvalido
+// }
+// 
+// 
+// pub type ErrorRegistro {
+//   MarcadorInvalido
+//   YaRegistrado
+// }
+// 
+// pub type CierrePuntos {
+//   SinVentajas
+//   ConVentajas
+// }
+// 
+// pub type CierreSet {
+//   PrimeroA
+//   ConTiebreak
+// }
+// 
+// pub type VarianteMuerte {
+//   A7
+//   A10
+// }
+// 
+// pub type VariantePuntos {
+//   Normal
+// }
+// 
+// pub type VarianteSet {
+//   SetNormal
+//   SetA4
+// }
+// 
+// // Cómo se juega: Muerte, Juego o Set, cada uno con su variante y su cierre.
+// pub type Regla {
+//   Muerte(VarianteMuerte, CierrePuntos)
+//   Juego(VariantePuntos, CierrePuntos)
+//   Set(VarianteSet, CierreSet)
+// }
+// 
+// pub fn nuevo() -> Marcador {
+//   Marcador(0, 0)
+// }
+// 
+// pub fn regla(marcador: Marcador) -> Regla {
+//   marcador.regla
+// }
+// 
+// pub fn registrar(
+//   marcador: Marcador,
+//   a: Int,
+//   b: Int,
+// ) -> Result(Marcador, ErrorRegistro) {
+//   case registrado(marcador) {
+//     True -> Error(YaRegistrado)
+//     False ->
+//       case marcador_valido(marcador.regla, a, b) {
+//         True -> Ok(Marcador(..marcador, a: a, b: b))
+//         False -> Error(MarcadorInvalido)
+//       }
+//   }
+// }
+// 
+// // Un juego terminado nunca puede ser 0-0 (el ganador llega al mínimo),
+// // así que 0-0 significa "aún no registrado".
+// fn registrado(m: Marcador) -> Bool {
+//   m.a != 0 || m.b != 0
+// }
+// 
+// /// Devuelve Error(Nil) si el marcador todavia no tiene resultado.
+// pub fn registrar(
+//   marcador: Marcador,
+//   a: Int,
+//   b: Int,
+// ) -> Result(Marcador, ErrorMarcador) {
+//   case marcador.a, marcador.b {
+//     Some(_), Some(_) -> Error(YaRegistrado)
+//     _, _ ->
+//       case valido(marcador.regla, a, b) {
+//         True -> Ok(Marcador(marcador.regla, Some(a), Some(b)))
+//         False -> Error(MarcadorInvalido)
+//       }
+//   }
+// }
+// 
+// pub fn valido(regla: Regla, a: Int, b: Int) -> Bool {
+//   let ganador = int.max(a, b)
+//   let perdedor = int.min(a, b)
+//   let min = minimo(regla)
+// 
+//   case perdedor < 0 {
+//     True -> False
+//     False ->
+//       case regla {
+//         Set(_, cierre) -> set_valido(ganador, perdedor, min, cierre)
+//         Juego(_, cierre) | Muerte(_, cierre) ->
+//           juego_valido(ganador, perdedor, min, cierre)
+//       }
+//   }
+// }
+// 
+// fn minimo(regla: Regla) -> Int {
+//   case regla {
+//     Juego(Normal, _) -> 4
+//     Muerte(A7, _) -> 7
+//     Muerte(A10, _) -> 10
+//     Set(SetNormal, _) -> 6
+//     Set(SetA4, _) -> 4
+//   }
+// }
+// 
+// fn juego_valido(
+//   ganador: Int,
+//   perdedor: Int,
+//   min: Int,
+//   cierre: CierrePuntos,
+// ) -> Bool {
+//   case ganador < min, cierre {
+//     True, _ -> False
+//     False, ConVentajas ->
+//       case ganador == min {
+//         True -> perdedor <= min - 2
+//         False -> ganador - perdedor == 2
+//       }
+//     False, SinVentajas -> ganador == min && perdedor < min
+//   }
+// }
+// 
+// fn set_valido(
+//   ganador: Int,
+//   perdedor: Int,
+//   min: Int,
+//   cierre: CierreSet,
+// ) -> Bool {
+//   case ganador < min, cierre {
+//     True, _ -> False
+//     False, PrimeroA -> ganador == min && perdedor < min
+//     False, ConTiebreak ->
+//       case ganador == min {
+//         True -> perdedor <= min - 2
+//         False -> ganador == min + 1 && perdedor >= min - 1 && perdedor <= min
+//       }
+//   }
+// }
+// 
+// pub fn gana_a(marcador: Marcador) -> Result(Bool, Nil) {
+//   case marcador.a, marcador.b {
+//     Some(a), Some(b) -> Ok(a > b)
+//     _, _ -> Error(Nil)
+//   }
+// }
