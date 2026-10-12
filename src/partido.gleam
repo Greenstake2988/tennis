@@ -1,5 +1,31 @@
+import juego.{type Juego}
 import jugador.{type Jugador}
 import marcador.{type Marcador}
+
+pub type CierreSet {
+  PrimeroA
+  TieBreakA7
+  TieBreakA10
+}
+
+pub type Set {
+  Set(set: List(Juego), cierre: CierreSet)
+}
+
+pub type CuantosSet {
+  Uno(Set)
+  MejorDe3(List(Set))
+  MejorDe5(List(Set))
+}
+
+pub type TipoDeSet {
+  SetA4Games(CuantosSet)
+  SetNormal(CuantosSet)
+}
+
+pub type TipoDePartido {
+  TipoDePartido(tipo_de_set: TipoDeSet)
+}
 
 pub opaque type Partido {
   Partido(jugador_a: Jugador, jugador_b: Jugador, marcador: Marcador)
